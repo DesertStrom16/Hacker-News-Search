@@ -3,13 +3,18 @@ import styled from "styled-components";
 import HistoryItem from "../components/HistoryItem";
 
 const Wrapper = styled.div`
-  width: 85%;
-  max-width: 800px;
+  width: 100%;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   align-items: center;
   padding-top: 25px;
+  overflow-y: auto;
+`;
+
+const OverflowWrapper = styled.div`
+  width: 85%;
+  max-width: 800px;
 
   @media (min-width: 768px) {
     width: 80%;
@@ -27,6 +32,10 @@ const Header = styled.div`
 
 const Title = styled.div`
   width: 35%;
+
+  @media (min-width: 768px) {
+    width: 45%;
+  }
 `;
 
 const DateTitle = styled.div`
@@ -42,17 +51,19 @@ const History = () => {
 
   return (
     <Wrapper>
-      <Header>
-        <Title>Search</Title>
-        <DateTitle>Date</DateTitle>
-      </Header>
-      {searchHistory.length > 0 ? (
-        [...searchHistory].reverse().map((search) => {
-          return <HistoryItem key={search.timestamp} {...search} />;
-        })
-      ) : (
-        <NoHistoryMsg>No search history found</NoHistoryMsg>
-      )}
+      <OverflowWrapper>
+        <Header>
+          <Title>Search</Title>
+          <DateTitle>Date</DateTitle>
+        </Header>
+        {searchHistory.length > 0 ? (
+          [...searchHistory].reverse().map((search) => {
+            return <HistoryItem key={search.timestamp} {...search} />;
+          })
+        ) : (
+          <NoHistoryMsg>No search history found</NoHistoryMsg>
+        )}
+      </OverflowWrapper>
     </Wrapper>
   );
 };

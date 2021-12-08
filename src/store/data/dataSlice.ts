@@ -29,6 +29,16 @@ export const dataSlice = createSlice({
       state.page = action.payload.page;
       state.query = action.payload.query;
     },
+    emptyFetchResult: (state, action: PayloadAction<{ query: string }>) => {
+      state.searchHistory.push({
+        term: action.payload.query,
+        timestamp: Date.now(),
+      });
+      state.hits = [];
+      state.nbPages = 0;
+      state.page = 0;
+      state.query = action.payload.query;
+    },
     clearNews: (state) => {
       state.hits = [];
       state.nbPages = 0;
@@ -38,6 +48,6 @@ export const dataSlice = createSlice({
   },
 });
 
-export const { fetchNews, clearNews } = dataSlice.actions;
+export const { fetchNews, emptyFetchResult, clearNews } = dataSlice.actions;
 
 export default dataSlice.reducer;

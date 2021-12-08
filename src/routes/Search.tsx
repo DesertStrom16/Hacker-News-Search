@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { querySearch } from "../helper/API";
-import { fetchNews, clearNews } from "../store/data/dataSlice";
+import {
+  fetchNews,
+  emptyFetchResult,
+  clearNews,
+} from "../store/data/dataSlice";
 import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -65,6 +69,10 @@ const PageCount = styled.div`
   align-items: center;
 `;
 
+const NoResults = styled.div`
+  color: gray;
+`;
+
 let timer: any;
 
 const Search = () => {
@@ -73,6 +81,9 @@ const Search = () => {
 
   const [input, setInput] = useState(query || "");
   const [loading, setLoading] = useState(false);
+  const [noResults, setNoResults] = useState(
+    query && hits.length <= 0 ? true : false
+  );
   const isInitialMountRef = useRef(true);
   const errorRef = useRef(false);
   const removeErrorRef = useRef(false);
@@ -96,11 +107,16 @@ const Search = () => {
             .then((data) => {
               if (data.hits && data.hits.length > 0) {
                 dispatch(fetchNews({ ...data, isSearch: true }));
+                setNoResults(false);
+              } else {
+                dispatch(emptyFetchResult({ query: input }));
+                setNoResults(true);
               }
             })
             .catch(() => {
               // Clear previous results on error
               dispatch(clearNews());
+              setNoResults(false);
               errorRef.current = true;
             });
 
@@ -183,6 +199,8 @@ const Search = () => {
               </PageButton>
             </Pageinate>
           </>
+        ) : noResults ? (
+          <NoResults>No results found</NoResults>
         ) : null}
       </Results>
     </Wrapper>

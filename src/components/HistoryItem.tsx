@@ -29,6 +29,7 @@ const Title = styled.div`
   @media (min-width: 768px) {
     white-space: nowrap;
     text-overflow: ellipsis;
+    width: 45%;
   }
 `;
 
