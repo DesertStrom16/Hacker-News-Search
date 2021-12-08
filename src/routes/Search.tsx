@@ -73,34 +73,39 @@ const Search = () => {
 
   const [input, setInput] = useState(query || "");
   const [loading, setLoading] = useState(false);
-  const mountRef = useRef(true);
-  const errRef = useRef(false);
-  const errRefTwo = useRef("");
-  const removeErrRef = useRef(false);
+  const isInitialMountRef = useRef(true);
+  const errorRef = useRef(false);
+  const removeErrorRef = useRef(false);
 
   useEffect(() => {
+    // Debounce input
     clearTimeout(timer);
     timer = setTimeout(async () => {
-      if (!mountRef.current) {
+      // If initial mount, set ref to false
+      if (isInitialMountRef.current) {
+        isInitialMountRef.current = false;
+      }
+      // Otherwise, fetch query from HN API
+      else {
+        // Check for empty input
         if (input.trim() !== "") {
           setLoading(true);
 
+          // Fetch page 1
           await querySearch(input, 0)
             .then((data) => {
               if (data.hits && data.hits.length > 0) {
                 dispatch(fetchNews({ ...data, isSearch: true }));
               }
             })
-            .catch((err) => {
+            .catch(() => {
+              // Clear previous results on error
               dispatch(clearNews());
-              errRefTwo.current = err;
-              errRef.current = true;
+              errorRef.current = true;
             });
 
           setLoading(false);
         }
-      } else {
-        mountRef.current = false;
       }
     }, 350);
   }, [input, dispatch]);
@@ -111,25 +116,29 @@ const Search = () => {
 
   const handlePaginate = async (next: boolean) => {
     setLoading(true);
+
+    // Add or subtract a page accordingly
     await querySearch(query, next ? page + 1 : page - 1)
       .then((data) => {
         if (data.hits && data.hits.length > 0) {
           dispatch(fetchNews(data));
         }
       })
-      .catch((err) => {
+      .catch(() => {
+        // Clear previous results on error
         dispatch(clearNews());
-        errRef.current = true;
+        errorRef.current = true;
       });
     setLoading(false);
   };
 
-  if (errRef.current) {
-    if (removeErrRef.current) {
-      errRef.current = false;
-      removeErrRef.current = false;
+  // Error tracking across renders
+  if (errorRef.current) {
+    if (removeErrorRef.current) {
+      errorRef.current = false;
+      removeErrorRef.current = false;
     } else {
-      removeErrRef.current = true;
+      removeErrorRef.current = true;
     }
   }
 
@@ -140,16 +149,18 @@ const Search = () => {
         onChange={handleChange}
         label="Search News"
         variant="standard"
-        error={errRef.current}
+        error={errorRef.current}
         helperText={
-          errRef.current ? `Oops, something went wrong. Please try again. ${errRefTwo.current}` : ""
+          errorRef.current
+            ? "Oops, something went wrong. Please try again."
+            : ""
         }
       />
 
       <Results>
         {loading ? (
           <CircularProgress />
-        ) : hits.length > 0 && !errRef.current ? (
+        ) : hits.length > 0 && !errorRef.current ? (
           <>
             {hits.map((hit) => (
               <HitItem key={hit.objectID} {...hit} />
@@ -162,7 +173,7 @@ const Search = () => {
               >
                 <ArrowBackIcon fontSize="large" />
               </PageButton>
-              <PageCount>{page}</PageCount>
+              <PageCount>{page + 1}</PageCount>
               <PageButton
                 sx={{ color: "white" }}
                 disabled={page === nbPages - 1}

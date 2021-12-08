@@ -3,13 +3,17 @@ import styled from "styled-components";
 import HistoryItem from "../components/HistoryItem";
 
 const Wrapper = styled.div`
-  width: 80%;
+  width: 85%;
   max-width: 800px;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   align-items: center;
   padding-top: 25px;
+
+  @media (min-width: 768px) {
+    width: 80%;
+  }
 `;
 
 const Header = styled.div`
@@ -18,29 +22,14 @@ const Header = styled.div`
   border-bottom: 2px solid gray;
   margin-bottom: 15px;
   display: flex;
-
-  @media (min-width: 768px) {
-    padding-left: 10px;
-  }
+  padding: 0px 14px 0px 6px;
 `;
 
 const Title = styled.div`
-  width: 50%;
-
-  @media (min-width: 515px) {
-    width: 52%;
-  }
-
-  @media (min-width: 575px) {
-    width: 55%;
-  }
-
-  @media (min-width: 768px) {
-    width: 35%;
-  }
+  width: 35%;
 `;
 
-const DateText = styled.div`
+const DateTitle = styled.div`
   margin-left: 10px;
 `;
 
@@ -54,8 +43,8 @@ const History = () => {
   return (
     <Wrapper>
       <Header>
-        <Title>Search Term</Title>
-        <DateText>Date</DateText>
+        <Title>Search</Title>
+        <DateTitle>Date</DateTitle>
       </Header>
       {searchHistory.length > 0 ? (
         [...searchHistory].reverse().map((search) => {

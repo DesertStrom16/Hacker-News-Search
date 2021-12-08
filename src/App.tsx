@@ -15,16 +15,25 @@ const Wrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
   max-width: 1920px;
   max-height: 1080px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 12px;
   overflow: hidden;
   background-color: rgb(245, 245, 245);
+
+  @media (min-width: 768px) {
+    width: 90%;
+    height: 90%;
+    border-radius: 12px;
+  }
+  @media (min-width: 1024px) {
+    width: 80%;
+    height: 80%;
+  }
 `;
 
 const NavTabs = styled(Tabs)`

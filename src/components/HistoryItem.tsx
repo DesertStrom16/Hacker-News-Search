@@ -17,27 +17,23 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 14px;
-  padding: 5px 0px 5px 10px;
+  padding: 6px 10px;
   box-sizing: border-box;
 `;
 
 const Title = styled.div`
   overflow: hidden;
   font-size: 16px;
-  width: 55%;
-  padding-left: 4px;
-  box-sizing: border-box;
+  width: 35%;
 
   @media (min-width: 768px) {
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 35%;
   }
 `;
 
-const SearchDate = styled.div`
-  margin-left: 14px;
-  margin-right: 10px;
+const TimeStamp = styled.div`
+  margin-left: 10px;
 `;
 
 const HistoryItem: React.FC<Search> = (props) => {
@@ -45,7 +41,7 @@ const HistoryItem: React.FC<Search> = (props) => {
   return (
     <Wrapper>
       <Title>{term}</Title>
-      <SearchDate>{formatDate.format(new Date(timestamp))}</SearchDate>
+      <TimeStamp>{formatDate.format(new Date(timestamp))}</TimeStamp>
     </Wrapper>
   );
 };
