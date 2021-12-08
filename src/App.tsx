@@ -1,5 +1,4 @@
-import { useState, SyntheticEvent } from "react";
-import { Routes, Route, Navigate, Link } from "react-router-dom";
+import { Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -20,6 +19,7 @@ const ContentWrapper = styled.div`
   height: 80%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   border-radius: 12px;
   overflow: hidden;
   background-color: rgb(245, 245, 245);
@@ -32,20 +32,13 @@ const NavTabs = styled(Tabs)`
 `;
 
 function App() {
-  const [menu, setMenu] = useState(0);
-
-  const handleChange = (e: SyntheticEvent, position: number) => {
-    setMenu(position);
-  };
+  let location = useLocation();
+  let tabValue = location.pathname === "/history" ? 1 : 0;
 
   return (
     <Wrapper>
       <ContentWrapper>
-        <NavTabs
-          value={menu}
-          onChange={handleChange}
-          aria-label="navigation tabs"
-        >
+        <NavTabs value={tabValue} aria-label="navigation tabs">
           <Tab label="Search" component={Link} to="search" />
           <Tab label="History" component={Link} to="history" />
         </NavTabs>

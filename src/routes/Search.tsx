@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { querySearch } from "../helper/API";
 import { fetchNews } from "../store/data/dataSlice";
@@ -66,12 +66,17 @@ const PageCount = styled.div`
 
 let timer: any;
 
-const Search: React.FC<{}> = (props) => {
+const Search = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const mountRef = useRef(true);
 
   const { hits, page, query, nbPages } = useAppSelector((state) => state.data);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    mountRef.current = false;
+  }, []);
 
   useEffect(() => {
     debounce();
@@ -81,7 +86,7 @@ const Search: React.FC<{}> = (props) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       handleSearch();
-    }, 300);
+    }, 350);
   };
 
   const handleChange = (e: InputChange) => {
@@ -94,7 +99,7 @@ const Search: React.FC<{}> = (props) => {
       await querySearch(input, 0)
         .then((data) => {
           if (data.hits && data.hits.length > 0) {
-            dispatch(fetchNews(data));
+            dispatch(fetchNews({ ...data, isSearch: true }));
           }
         })
         .catch((err) => console.log(err));
@@ -114,10 +119,13 @@ const Search: React.FC<{}> = (props) => {
     setLoading(false);
   };
 
+  const inputValue =
+    mountRef.current && hits.length > 0 && query.trim() !== "" ? query : input;
+
   return (
     <Wrapper>
       <TextInput
-        value={input}
+        value={inputValue}
         onChange={handleChange}
         label="Search News"
         variant="standard"

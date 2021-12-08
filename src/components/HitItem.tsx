@@ -3,6 +3,12 @@ import styled from "styled-components";
 import CommentIcon from "@mui/icons-material/Comment";
 import Hit from "../models/hit";
 
+const formatDate = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
 const Wrapper = styled.div`
   width: 84%;
   border-radius: 12px;
@@ -25,11 +31,12 @@ const CommentWrapper = styled.div`
 `;
 
 const HitItem: React.FC<Hit> = (props) => {
-  const { title, author, num_comments } = props;
+  const { title, author, num_comments, created_at_i } = props;
   return (
     <Wrapper>
       <Title>{title}</Title>
       <div>By: {author}</div>
+      <div>{formatDate.format(new Date(created_at_i * 1000))}</div>
       <CommentWrapper>
         <CommentIcon sx={{ marginRight: "2px" }} />
         {num_comments}
