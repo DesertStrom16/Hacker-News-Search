@@ -10,7 +10,7 @@ const formatDate = new Intl.DateTimeFormat(undefined, {
 });
 
 const Wrapper = styled.div`
-  width: 84%;
+  width: 82%;
   border-radius: 12px;
   border: 1px solid black;
   display: flex;

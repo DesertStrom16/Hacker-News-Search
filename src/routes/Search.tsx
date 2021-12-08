@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { querySearch } from "../helper/API";
-import { fetchNews } from "../store/data/dataSlice";
+import { fetchNews, clearNews } from "../store/data/dataSlice";
 import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,11 +23,12 @@ const Wrapper = styled.div`
 `;
 
 const TextInput = styled(TextField)`
-  width: 400px;
+  width: 82%;
+  max-width: 400px;
 `;
 
 const Results = styled.div`
-  width: 95%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,44 +68,45 @@ const PageCount = styled.div`
 let timer: any;
 
 const Search = () => {
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const mountRef = useRef(true);
-
   const { hits, page, query, nbPages } = useAppSelector((state) => state.data);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    mountRef.current = false;
-  }, []);
+  const [input, setInput] = useState(query || "");
+  const [loading, setLoading] = useState(false);
+  const mountRef = useRef(true);
+  const errRef = useRef(false);
+  const errRefTwo = useRef("");
+  const removeErrRef = useRef(false);
 
   useEffect(() => {
-    debounce();
-  }, [input]);
-
-  const debounce = () => {
     clearTimeout(timer);
-    timer = setTimeout(() => {
-      handleSearch();
+    timer = setTimeout(async () => {
+      if (!mountRef.current) {
+        if (input.trim() !== "") {
+          setLoading(true);
+
+          await querySearch(input, 0)
+            .then((data) => {
+              if (data.hits && data.hits.length > 0) {
+                dispatch(fetchNews({ ...data, isSearch: true }));
+              }
+            })
+            .catch((err) => {
+              dispatch(clearNews());
+              errRefTwo.current = err;
+              errRef.current = true;
+            });
+
+          setLoading(false);
+        }
+      } else {
+        mountRef.current = false;
+      }
     }, 350);
-  };
+  }, [input, dispatch]);
 
   const handleChange = (e: InputChange) => {
     setInput(e.target.value);
-  };
-
-  const handleSearch = async () => {
-    if (input.trim() !== "") {
-      setLoading(true);
-      await querySearch(input, 0)
-        .then((data) => {
-          if (data.hits && data.hits.length > 0) {
-            dispatch(fetchNews({ ...data, isSearch: true }));
-          }
-        })
-        .catch((err) => console.log(err));
-      setLoading(false);
-    }
   };
 
   const handlePaginate = async (next: boolean) => {
@@ -115,26 +117,39 @@ const Search = () => {
           dispatch(fetchNews(data));
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        dispatch(clearNews());
+        errRef.current = true;
+      });
     setLoading(false);
   };
 
-  const inputValue =
-    mountRef.current && hits.length > 0 && query.trim() !== "" ? query : input;
+  if (errRef.current) {
+    if (removeErrRef.current) {
+      errRef.current = false;
+      removeErrRef.current = false;
+    } else {
+      removeErrRef.current = true;
+    }
+  }
 
   return (
     <Wrapper>
       <TextInput
-        value={inputValue}
+        value={input}
         onChange={handleChange}
         label="Search News"
         variant="standard"
+        error={errRef.current}
+        helperText={
+          errRef.current ? `Oops, something went wrong. Please try again. ${errRefTwo.current}` : ""
+        }
       />
 
       <Results>
         {loading ? (
           <CircularProgress />
-        ) : hits.length > 0 ? (
+        ) : hits.length > 0 && !errRef.current ? (
           <>
             {hits.map((hit) => (
               <HitItem key={hit.objectID} {...hit} />

@@ -3,7 +3,8 @@ import styled from "styled-components";
 import HistoryItem from "../components/HistoryItem";
 
 const Wrapper = styled.div`
-  width: 50%;
+  width: 80%;
+  max-width: 800px;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
@@ -13,15 +14,30 @@ const Wrapper = styled.div`
 
 const Header = styled.div`
   width: 100%;
-  padding-left: 10px;
   box-sizing: border-box;
   border-bottom: 2px solid gray;
   margin-bottom: 15px;
   display: flex;
+
+  @media (min-width: 768px) {
+    padding-left: 10px;
+  }
 `;
 
 const Title = styled.div`
-  width: 35%;
+  width: 50%;
+
+  @media (min-width: 515px) {
+    width: 52%;
+  }
+
+  @media (min-width: 575px) {
+    width: 55%;
+  }
+
+  @media (min-width: 768px) {
+    width: 35%;
+  }
 `;
 
 const DateText = styled.div`

@@ -24,15 +24,20 @@ const Wrapper = styled.div`
 const Title = styled.div`
   overflow: hidden;
   font-size: 16px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 35%;
+  width: 55%;
   padding-left: 4px;
   box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 35%;
+  }
 `;
 
 const SearchDate = styled.div`
   margin-left: 14px;
+  margin-right: 10px;
 `;
 
 const HistoryItem: React.FC<Search> = (props) => {

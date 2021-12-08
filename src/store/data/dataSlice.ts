@@ -19,19 +19,25 @@ export const dataSlice = createSlice({
   reducers: {
     fetchNews: (state, action: PayloadAction<NewsState>) => {
       if (action.payload.isSearch) {
-        state.searchHistory = [
-          ...state.searchHistory,
-          { term: action.payload.query, timestamp: Date.now() },
-        ];
+        state.searchHistory.push({
+          term: action.payload.query,
+          timestamp: Date.now(),
+        });
       }
       state.hits = action.payload.hits;
       state.nbPages = action.payload.nbPages;
       state.page = action.payload.page;
       state.query = action.payload.query;
     },
+    clearNews: (state) => {
+      state.hits = [];
+      state.nbPages = 0;
+      state.page = 0;
+      state.query = "";
+    },
   },
 });
 
-export const { fetchNews } = dataSlice.actions;
+export const { fetchNews, clearNews } = dataSlice.actions;
 
 export default dataSlice.reducer;

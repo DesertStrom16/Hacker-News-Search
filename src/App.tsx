@@ -17,6 +17,8 @@ const Wrapper = styled.div`
 const ContentWrapper = styled.div`
   width: 80%;
   height: 80%;
+  max-width: 1920px;
+  max-height: 1080px;
   display: flex;
   flex-direction: column;
   align-items: center;
